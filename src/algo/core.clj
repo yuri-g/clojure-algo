@@ -1,6 +1,9 @@
-(ns algo.core)
+(ns algo.core
+  (:gen-class)
+  (:use [algo.merge-sort-inversions :as inversions]))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defn -main
+  [& args]
+  (let [file-name (first args)]
+    (println "Number of inversions in " file-name " :" (get (inversions/count-inversions file-name) 1))))
+

@@ -8,7 +8,7 @@
   (let [n (count xs)]
     (int (Math/ceil (/ n 2)))))
 
-(defn- merge [first-half second-half inversions-total]
+(defn- merge-inversions [first-half second-half inversions-total]
   (let [output []]
     (loop [current-output       output
            left-part-remainder  first-half
@@ -32,7 +32,6 @@
 
 (defn- split-vector [xs]
   (let [n (count xs)]
-    (print xs)
     (if (= n 1)
       xs
       (let [part-length (get-part-length xs)]
@@ -49,7 +48,7 @@
              sorted-right (get merge-right-result 0)
              inversions-left (get merge-left-result 1)
              inversions-right (get merge-right-result 1)]
-         (merge sorted-left sorted-right (+ inversions-left inversions-right))))))
+         (merge-inversions sorted-left sorted-right (+ inversions-left inversions-right))))))
   ([xs inversions-total]
    (let [split-xs (split-vector xs)]
      (if (<= (count xs) 1)
@@ -60,7 +59,7 @@
              sorted-right (get merge-right-result 0)
              inversions-left (get merge-left-result 1)
              inversions-right (get merge-right-result 1)]
-         (merge sorted-left sorted-right (+ inversions-left inversions-right)))))))
+         (merge-inversions sorted-left sorted-right (+ inversions-left inversions-right)))))))
 
 (defn- file->vector [file-name]
   (let [reader (io/reader file-name)]
@@ -69,7 +68,7 @@
 (defn count-inversions
   ([file-name]
    (let [xs (file->vector file-name)]
-     (merge-sort-with-inversions xs)))
+     (merge-sort-with-inversions (vec xs))))
   ([file-name n]
    (let [xs (take n (file->vector file-name))]
      (merge-sort-with-inversions (vec xs)))))
@@ -101,5 +100,3 @@
         :let [{input :input
                output :output} test]]
     (assert (= output (get (merge-sort-with-inversions input) 1)))))
-
-(merge-sort-with-inversions [5 4 3 2 1])
