@@ -5,55 +5,35 @@
     (int (Math/ceil (/ length 2)))))
 
 (defn split-array [array]
-  (let [part-length (get-part-length array)]
-    (vector (take part-length array) (drop part-length array))))
-
-(split-array [1 2 3 4])
+  (if (= (count array) 1)
+    array
+    (let [part-length (get-part-length array)]
+      (conj [] (subvec array 0 part-length) (subvec array part-length (count array))))))
 
 (defn- left-smaller? [left-part right-part]
-  (print (first left-part) " < " (first right-part) "?\n")
   (< (first left-part) (first right-part)))
 
 (defn- merge [first-half second-half]
   (let [output-length (+ (count first-half) (count second-half))
-        output []]
-    (loop [current-output output
-           left-part-remainder first-half
+        output        []]
+    (loop [current-output       output
+           left-part-remainder  first-half
            right-part-remainder second-half]
       (if (= (count current-output) output-length)
-        (let []
-          current-output
-          )
-        (let []
-          (print "\n Merge recurse:\n" left-part-remainder ":" right-part-remainder " " "&" current-output "\n")
+        current-output
           (cond
-            (nil? (first left-part-remainder))
-            (let []
-              (print "\n Return: " (conj current-output right-part-remainder) "\n")
-              (conj current-output right-part-remainder)
-              )
-            (nil? (first right-part-remainder))
-            (let []
-              (print "\n Return: " (conj current-output left-part-remainder) "\n")
-              (conj current-output left-part-remainder)
-              )
+            (nil? (first left-part-remainder)) (concat current-output right-part-remainder)
+            (nil? (first right-part-remainder)) (concat current-output left-part-remainder)
             :else
-            (let []
-              (print "\n")
-              (if (left-smaller? left-part-remainder right-part-remainder)
-                (recur (conj current-output (first left-part-remainder)) (rest left-part-remainder) right-part-remainder)
-                (recur (conj current-output (first right-part-remainder)) left-part-remainder (rest right-part-remainder)))))))))
-          )
+            (if (left-smaller? left-part-remainder right-part-remainder)
+              (recur (conj current-output (first left-part-remainder)) (rest left-part-remainder) right-part-remainder)
+              (recur (conj current-output (first right-part-remainder)) left-part-remainder (rest right-part-remainder))))))))
 
 (defn merge-sort [input-array]
   (let [splited-array (split-array input-array)]
-    (print "splitted array? =>" splited-array "\n")
-    (print "first! array? =>" (first splited-array) "\n")
-    (print "last! array? =>" (first splited-array) "\n")
     (if (<= (count input-array) 1)
       input-array
-      (merge (merge-sort (first splited-array)) (merge-sort (rest splited-array))))))
+      (vec (merge (merge-sort (get splited-array 0)) (merge-sort (get splited-array 1)))))))
 
-(print "\n!!!!!!!!!!!!!!!!!!\n")
+(merge-sort [0 89 0 2 0 89 1 8 77 212 9 5.4 89])
 
-(merge-sort [6 4 7])
