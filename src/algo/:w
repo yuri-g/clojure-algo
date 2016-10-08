@@ -1,17 +1,11 @@
 (ns algo.merge-sort
   (:require [clojure.java.io :as io]))
 
-(defn sort-file
-  ([file-name]
-   (let [xs (file->vector file-name)]
-     (merge-sort xs)))
-  ([file-name n]
-   (let [xs (take n (file->vector file-name))]
-     (merge-sort (vec xs)))))
+(defn file->vector [file-name]
+  (let [reader (io/reader file-name)])
+  )
 
-(defn- file->vector [file-name]
-  (let [reader (io/reader file-name)]
-    (map #(Integer. %)(line-seq reader))))
+(sort-file "./resources/input.txt")
 
 (defn merge-sort [xs]
   (let [split-xs (split-vector xs)]
