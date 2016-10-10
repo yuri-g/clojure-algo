@@ -38,17 +38,6 @@
         (conj [] (subvec xs 0 part-length) (subvec xs part-length n))))))
 
 (defn merge-sort-with-inversions
-  ([xs]
-   (let [split-xs (split-vector xs)]
-     (if (<= (count xs) 1)
-       [xs 0]
-       (let [merge-left-result (merge-sort-with-inversions (get split-xs 0) 0)
-             merge-right-result (merge-sort-with-inversions (get split-xs 1) 0)
-             sorted-left (get merge-left-result 0)
-             sorted-right (get merge-right-result 0)
-             inversions-left (get merge-left-result 1)
-             inversions-right (get merge-right-result 1)]
-         (merge-inversions sorted-left sorted-right (+ inversions-left inversions-right))))))
   ([xs inversions-total]
    (let [split-xs (split-vector xs)]
      (if (<= (count xs) 1)
@@ -68,10 +57,10 @@
 (defn count-inversions
   ([file-name]
    (let [xs (file->vector file-name)]
-     (merge-sort-with-inversions (vec xs))))
+     (merge-sort-with-inversions (vec xs) 0)))
   ([file-name n]
    (let [xs (take n (file->vector file-name))]
-     (merge-sort-with-inversions (vec xs)))))
+     (merge-sort-with-inversions (vec xs) 0))))
 
 (def test-cases [{:input [1 3 5 2 4 6]
                   :output 3}
@@ -99,4 +88,7 @@
   (for [test tests
         :let [{input :input
                output :output} test]]
-    (assert (= output (get (merge-sort-with-inversions input) 1)))))
+    (assert (= output (get (merge-sort-with-inversions input 0) 1)))))
+
+; Current time: around 400ms
+;(time (get (count-inversions "./resources/input.txt" 5000) 1))
