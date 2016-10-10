@@ -14,8 +14,8 @@
          right-part-remainder second-half
          current-inversions inversions-total]
     (cond
-      (nil? (first left-part-remainder)) [(concat current-output right-part-remainder) current-inversions]
-      (nil? (first right-part-remainder)) [(concat current-output left-part-remainder) current-inversions]
+      (empty? left-part-remainder) [(concat current-output right-part-remainder) current-inversions]
+      (empty? right-part-remainder) [(concat current-output left-part-remainder) current-inversions]
       :else
       (if (left-smaller? left-part-remainder right-part-remainder)
         (recur (conj current-output (first left-part-remainder))
@@ -43,8 +43,6 @@
       (let [[sorted-left inversions-left] (merge-sort-with-inversions left-part inversions-total)
             [sorted-right inversions-right] (merge-sort-with-inversions right-part inversions-total)]
         (merge-inversions sorted-left sorted-right (+ inversions-left inversions-right))))))
-
-;(run-tests test-cases)
 
 (defn- file->vector [file-name]
   (let [reader (io/reader file-name)]
@@ -86,5 +84,3 @@
                output :output} test]]
     (assert (= output (get (merge-sort-with-inversions input 0) 1)))))
 
-; Current time: around 400ms
-;(time (get (count-inversions "./resources/input.txt" 5000) 1))
