@@ -9,26 +9,25 @@
     (int (Math/ceil (/ n 2)))))
 
 (defn- merge-inversions [first-half second-half inversions-total]
-  (let [output []]
-    (loop [current-output       output
-           left-part-remainder  first-half
-           right-part-remainder second-half
-           current-inversions inversions-total]
-      (cond
-        (nil? (first left-part-remainder)) [(concat current-output right-part-remainder) current-inversions]
-        (nil? (first right-part-remainder)) [(concat current-output left-part-remainder) current-inversions]
-        :else
-        (if (left-smaller? left-part-remainder right-part-remainder)
-          (recur (conj current-output (first left-part-remainder))
-                 (rest left-part-remainder)
-                 right-part-remainder
-                 current-inversions)
+  (loop [current-output       []
+         left-part-remainder  first-half
+         right-part-remainder second-half
+         current-inversions inversions-total]
+    (cond
+      (nil? (first left-part-remainder)) [(concat current-output right-part-remainder) current-inversions]
+      (nil? (first right-part-remainder)) [(concat current-output left-part-remainder) current-inversions]
+      :else
+      (if (left-smaller? left-part-remainder right-part-remainder)
+        (recur (conj current-output (first left-part-remainder))
+               (rest left-part-remainder)
+               right-part-remainder
+               current-inversions)
 
-          (let [n-inversions (count left-part-remainder)]
-            (recur (conj current-output (first right-part-remainder))
-                   left-part-remainder
-                   (rest right-part-remainder)
-                   (+ n-inversions current-inversions))))))))
+        (let [n-inversions (count left-part-remainder)]
+          (recur (conj current-output (first right-part-remainder))
+                 left-part-remainder
+                 (rest right-part-remainder)
+                 (+ n-inversions current-inversions)))))))
 
 (defn- split-vector [xs]
   (let [n (count xs)]
@@ -37,18 +36,15 @@
       (let [part-length (get-part-length xs)]
         (conj [] (subvec xs 0 part-length) (subvec xs part-length n))))))
 
-(defn merge-sort-with-inversions
-  ([xs inversions-total]
-   (let [split-xs (split-vector xs)]
-     (if (<= (count xs) 1)
-       [xs inversions-total]
-       (let [merge-left-result (merge-sort-with-inversions (get split-xs 0) inversions-total)
-             merge-right-result (merge-sort-with-inversions (get split-xs 1) inversions-total)
-             sorted-left (get merge-left-result 0)
-             sorted-right (get merge-right-result 0)
-             inversions-left (get merge-left-result 1)
-             inversions-right (get merge-right-result 1)]
-         (merge-inversions sorted-left sorted-right (+ inversions-left inversions-right)))))))
+(defn merge-sort-with-inversions [xs inversions-total]
+  (let [[left-part right-part] (split-vector xs)]
+    (if (= 1 (count xs))
+      [xs inversions-total]
+      (let [[sorted-left inversions-left] (merge-sort-with-inversions left-part inversions-total)
+            [sorted-right inversions-right] (merge-sort-with-inversions right-part inversions-total)]
+        (merge-inversions sorted-left sorted-right (+ inversions-left inversions-right))))))
+
+;(run-tests test-cases)
 
 (defn- file->vector [file-name]
   (let [reader (io/reader file-name)]
