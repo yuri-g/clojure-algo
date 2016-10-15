@@ -16,8 +16,6 @@
           (recur (inc i) (inc j) (swap current-partition j i))
           (recur i (inc j) current-partition))))))
 
-(quick-sort [3 9 8 4 6 10 2 5 7 1] last-element-pivot 0)
-
 (defn- swap [xs i j]
   (-> xs
       (assoc i (xs j))
@@ -39,11 +37,32 @@
 (defn- first-element-pivot [xs]
   0)
 
-(defn last-element-pivot [xs]
+(defn- last-element-pivot [xs]
   (if (= (count xs) 0)
     0
-    (dec (count xs))
-  ))
+    (dec (count xs))))
+
+(defn- get-middle-index [xs]
+  (let [n (count xs)
+        even-middle (/ n 2)]
+    (if (even? n)
+      (dec even-middle)
+      (int (Math/floor even-middle)))))
+
+(defn- median [numbers]
+  (let [sort-result (quick-sort numbers first-element-pivot 0)
+        ; replace with proper destructuring
+        sorted-elements (vec (:elements sort-result))
+        middle-index (get-middle-index sorted-elements)]
+    (get sorted-elements middle-index)))
+
+(defn- median-of-3-pivot [xs]
+  (if (= (count xs) 0)
+    0
+    (let [first 0
+          middle (get-middle-index xs)
+          last (dec (count xs))]
+      (.indexOf xs (median [(get xs first) (get xs middle) (get xs last)])))))
 
 (defn- file->vector [file-name]
   (let [reader (io/reader file-name)]
@@ -67,7 +86,15 @@
                                   {:path   "./resources/quick_sort_1000.txt"
                                    :output 10184
                                    :input last-element-pivot}
-                                  ])
+                                  {:path   "./resources/quick_sort_10.txt"
+                                   :output 21
+                                   :input median-of-3-pivot}
+                                  {:path   "./resources/quick_sort_100.txt"
+                                   :output 518
+                                   :input median-of-3-pivot}
+                                  {:path   "./resources/quick_sort_1000.txt"
+                                   :output 8921
+                                   :input median-of-3-pivot}])
 
 (defn count-comparisons
   ([file-name pivot]
@@ -82,7 +109,8 @@
         :let [{path :path
                output :output
                input :input} test]]
-    (assert (= output (:comparisons (count-comparisons path input))))))
+    (let [result (:comparisons (count-comparisons path input))]
+      (assert (= output result)))))
 
 (run-tests test-cases)
 
