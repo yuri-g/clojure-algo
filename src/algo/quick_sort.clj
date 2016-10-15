@@ -1,6 +1,11 @@
 (ns algo.quick-sort
   (:require [clojure.java.io :as io]))
 
+(defn- swap [xs i j]
+  (-> xs
+      (assoc i (xs j))
+      (assoc j (xs i))))
+
 (defn- partition-in-place [xs pivot r]
   (let [pivot-element (get xs pivot)
         n (count xs)
@@ -16,11 +21,6 @@
           (recur (inc i) (inc j) (swap current-partition j i))
           (recur i (inc j) current-partition))))))
 
-(defn- swap [xs i j]
-  (-> xs
-      (assoc i (xs j))
-      (assoc j (xs i))))
-
 (defn quick-sort [xs pivot-function total-comparisons]
   (if (<= (count xs) 1)
     {:elements xs :comparisons total-comparisons}
@@ -34,10 +34,10 @@
                      (:elements right-part-sorted))
        :comparisons (+ total-comparisons (:comparisons left-part-sorted) (:comparisons right-part-sorted))})))
 
-(defn- first-element-pivot [xs]
+(defn first-element-pivot [xs]
   0)
 
-(defn- last-element-pivot [xs]
+(defn last-element-pivot [xs]
   (if (= (count xs) 0)
     0
     (dec (count xs))))
@@ -56,7 +56,7 @@
         middle-index (get-middle-index sorted-elements)]
     (get sorted-elements middle-index)))
 
-(defn- median-of-3-pivot [xs]
+(defn median-of-3-pivot [xs]
   (if (= (count xs) 0)
     0
     (let [first 0
