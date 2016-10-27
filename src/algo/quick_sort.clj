@@ -67,7 +67,6 @@
 (defn- file->vector [file-name]
   (let [reader (io/reader file-name)]
     (map #(Integer. %) (line-seq reader))))
-
 (def ^{:private true} test-cases [{:path   "./resources/quick_sort_10.txt"
                                    :output 25
                                    :input first-element-pivot}
