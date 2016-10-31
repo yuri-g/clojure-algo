@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [algo.utility :as util :only file->vector]
             [algo.quick-sort :as quick-sort]))
-
 (defn split-on-tabs [input-string]
   (vec (map #(Integer. %) (str/split input-string #"\t"))))
 
@@ -15,17 +14,26 @@
     adjacency))
 
 (defn- replace-adjacency [new-label old-label vertex]
-  ;(spit "./debug-3.txt" (str "Replacing" old-label " with " new-label "in: \n") :append true)
-  ;(spit "./debug-3.txt" (str (:adjacent-vertices vertex) "\n") :append true)
   (let [new-adjacency (map #(replace-if new-label old-label %) (:adjacent-vertices vertex))]
-    ;(spit "./debug-3.txt" (str "resuling in:" (vec new-adjacency) "\n") :append true)
     (->Vertex (:label vertex) (vec new-adjacency))))
 
+(defn- vertex->vertex-map-entry [vertex]
+  [(:label vertex) vertex])
+
+(spit "debug.txt" "")
+
 (defn- contract-with-others [u-label v-label graph]
-  (vec (map #(replace-adjacency u-label v-label %) graph)))
+  (let [contracted (map #(replace-adjacency u-label v-label (get % 1)) (seq graph))
+        graph-representation (apply array-map (flatten (map vertex->vertex-map-entry contracted)))]
+    graph-representation))
+
+(defn- get-result [_]
+  (let [min-cut-result (min-cut (apply array-map (flatten (map vector->vertex-map-entry (util/file->vector "./resources/min-cut-problem.txt" split-on-tabs)))))]
+    (count (:adjacent-vertices (get (first min-cut-result) 1)))))
+
+(spit "result.txt" (sort (map get-result (range 0 100))))
 
 (defn- remove-self-loops [label adjacent-vertices]
-  ;(spit "./debug-2.txt" (str "Before: " label " + " (vec adjacent-vertices) "\n") :append true)
   (vec (remove #(= label %) adjacent-vertices)))
 
 (defn- contract-vertices [u v]
@@ -33,40 +41,37 @@
         n-before (count cntd)
         without-loops (remove-self-loops (:label v) (remove-self-loops (:label u)  cntd))
         n-after (count without-loops)]
-    ;(spit "./debug-2.txt" (str "After: " (:label u) " + " (vec without-loops) "\n") :append true)
     (->Vertex (:label u) (vec without-loops))))
 
-(defn- contract [u-index v-index graph]
-  (let [u (get graph u-index)
-        v (get graph v-index)
-        u-label (:label u)
-        v-label (:label v)
-        new-graph (assoc graph u-index (contract-vertices u v))]
-    (contract-with-others u-label v-label (remove #(= v-label (:label %)) new-graph))))
+(defn- contract [u-vertex v-vertex graph]
+  (let [u-label (:label u-vertex)
+        v-label (:label v-vertex)
+        new-graph (assoc graph u-label (contract-vertices u-vertex v-vertex))
+        removed-result (dissoc new-graph v-label)]
+    (contract-with-others u-label v-label removed-result)))
 
-(defn- are-connected [u v]
-  (let [vertex-label (:label u)
-        adjacency (:adjacent-vertices v)]
-    (some #(= vertex-label %) adjacency)))
+(defn- random-key [xs]
+  (let [xs-keys (keys xs)]
+    (rand-nth xs-keys)))
 
 (defn- min-cut [xs]
   (loop [current-xs xs]
     (let [n (count current-xs)
-          u-index (rand-int n)
-          v-index (rand-int n)]
+          u-index (random-key current-xs)
+          u-vertex (u-index current-xs)
+          v-index (rand-nth (:adjacent-vertices u-vertex))]
       (if (= n 2)
         current-xs
-        (if (and (not (= u-index v-index)) (are-connected (get current-xs u-index) (get current-xs v-index)))
-          (recur (contract u-index v-index current-xs))
-          (recur current-xs))))))
+        ;(if (= u-index v-index)
+          ; try again, sorry
+          ;(recur current-xs)
+          (recur (contract u-vertex (v-index current-xs) current-xs))))))
 
-(defn- make-vertex-array [xs]
+(defn- int->key [i]
+  (keyword (str i)))
+
+(defn- vector->vertex-map-entry [xs]
   (let [[label] xs
-        adjacent-vertices (vec (rest xs))]
-    (->Vertex label adjacent-vertices)))
+        adjacent-vertices (vec (map int->key (rest xs)))]
+    [(keyword (str label)) (->Vertex (int->key label) adjacent-vertices)]))
 
-(let [min-cut-graph  (min-cut (vec (map make-vertex-array (util/file->vector "./resources/min-cut-problem.txt" split-on-tabs))))
-      [first second] min-cut-graph
-      first-count    (count (:adjacent-vertices first))
-      second-count (count (:adjacent-vertices second))]
-  (spit "result.txt" (str (vec first) "\n\n" (vec second) "\n\n First count:\n" first-count "\n Second count")))
