@@ -1,10 +1,7 @@
 (ns algo.merge-sort-test
   (:require [algo.merge-sort :as m]
-            [clojure.test :as t]))
-
-(defn- is-sorted [xs]
-  (let [sorted-xs (sort xs)]
-    (t/is (= sorted-xs xs))))
+            [clojure.test :as t]
+            [algo.test-utils :refer :all]))
 
 (def ^{:private true} test-cases [{:input [1 3 5 2 4 6]
                                    :output 3}
