@@ -20,18 +20,10 @@
 (defn- vertex->vertex-map-entry [vertex]
   [(:label vertex) vertex])
 
-(spit "debug.txt" "")
-
 (defn- contract-with-others [u-label v-label graph]
   (let [contracted (map #(replace-adjacency u-label v-label (get % 1)) (seq graph))
         graph-representation (apply array-map (flatten (map vertex->vertex-map-entry contracted)))]
     graph-representation))
-
-(defn- get-result [_]
-  (let [min-cut-result (min-cut (apply array-map (flatten (map vector->vertex-map-entry (util/file->vector "./resources/min-cut-problem.txt" split-on-tabs)))))]
-    (count (:adjacent-vertices (get (first min-cut-result) 1)))))
-
-(spit "result.txt" (sort (map get-result (range 0 100))))
 
 (defn- remove-self-loops [label adjacent-vertices]
   (vec (remove #(= label %) adjacent-vertices)))
@@ -54,7 +46,7 @@
   (let [xs-keys (keys xs)]
     (rand-nth xs-keys)))
 
-(defn- min-cut [xs]
+(defn- count-min-cut [xs]
   (loop [current-xs xs]
     (let [n (count current-xs)
           u-index (random-key current-xs)
@@ -62,10 +54,7 @@
           v-index (rand-nth (:adjacent-vertices u-vertex))]
       (if (= n 2)
         current-xs
-        ;(if (= u-index v-index)
-          ; try again, sorry
-          ;(recur current-xs)
-          (recur (contract u-vertex (v-index current-xs) current-xs))))))
+        (recur (contract u-vertex (v-index current-xs) current-xs))))))
 
 (defn- int->key [i]
   (keyword (str i)))
@@ -74,4 +63,11 @@
   (let [[label] xs
         adjacent-vertices (vec (map int->key (rest xs)))]
     [(keyword (str label)) (->Vertex (int->key label) adjacent-vertices)]))
+
+(defn- file->graph-representation [file-path]
+  (apply array-map (flatten (map vector->vertex-map-entry (util/file->vector file-path split-on-tabs)))))
+
+(defn min-cut [file-path]
+  (let [min-cut-result (count-min-cut (file->graph-representation file-path))]
+    (count (:adjacent-vertices (get (first min-cut-result) 1)))))
 
