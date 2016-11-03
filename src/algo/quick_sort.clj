@@ -67,33 +67,6 @@
 (defn- file->vector [file-name]
   (let [reader (io/reader file-name)]
     (map #(Integer. %) (line-seq reader))))
-(def ^{:private true} test-cases [{:path   "./resources/quick_sort_10.txt"
-                                   :output 25
-                                   :input first-element-pivot}
-                                  {:path   "./resources/quick_sort_100.txt"
-                                   :output 615
-                                   :input first-element-pivot}
-                                  {:path   "./resources/quick_sort_1000.txt"
-                                   :output 10297
-                                   :input first-element-pivot}
-                                  {:path   "./resources/quick_sort_10.txt"
-                                   :output 29
-                                   :input last-element-pivot}
-                                  {:path   "./resources/quick_sort_100.txt"
-                                   :output 587
-                                   :input last-element-pivot}
-                                  {:path   "./resources/quick_sort_1000.txt"
-                                   :output 10184
-                                   :input last-element-pivot}
-                                  {:path   "./resources/quick_sort_10.txt"
-                                   :output 21
-                                   :input median-of-3-pivot}
-                                  {:path   "./resources/quick_sort_100.txt"
-                                   :output 518
-                                   :input median-of-3-pivot}
-                                  {:path   "./resources/quick_sort_1000.txt"
-                                   :output 8921
-                                   :input median-of-3-pivot}])
 
 (defn count-comparisons
   ([file-name pivot]
@@ -102,14 +75,4 @@
   ([file-name pivot n]
    (let [xs (take n (file->vector file-name))]
      (quick-sort (vec xs) pivot 0))))
-
-(defn- run-tests [tests]
-  (for [test tests
-        :let [{path :path
-               output :output
-               input :input} test]]
-    (let [result (:comparisons (count-comparisons path input))]
-      (assert (= output result)))))
-
-(run-tests test-cases)
 
