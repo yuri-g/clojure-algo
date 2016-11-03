@@ -34,7 +34,7 @@
     (if (= n 1)
       xs
       (let [part-length (get-part-length xs)]
-        (conj [] (subvec xs 0 part-length) (subvec xs part-length n))))))
+        (vector (subvec xs 0 part-length) (subvec xs part-length n))))))
 
 (defn merge-sort-with-inversions [xs inversions-total]
   (let [[left-part right-part] (split-vector xs)]

@@ -38,7 +38,7 @@
   0)
 
 (defn last-element-pivot [xs]
-  (if (= (count xs) 0)
+  (if (zero? (count xs))
     0
     (dec (count xs))))
 
@@ -57,7 +57,7 @@
     (get sorted-elements middle-index)))
 
 (defn median-of-3-pivot [xs]
-  (if (= (count xs) 0)
+  (if (zero? (count xs))
     0
     (let [first 0
           middle (get-middle-index xs)
