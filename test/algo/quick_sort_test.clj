@@ -3,25 +3,27 @@
             [clojure.test :as t]
             [algo.test-utils :refer :all]))
 
-(def ^{:private true} first-element-pivot-cases [{:path   "./resources/quick_sort_10.txt"
+(def ^{:private true} base-test-case-path "resources/test/quick_sort")
+
+(def ^{:private true} first-element-pivot-cases [{:path   (str base-test-case-path "/quick_sort_10.txt")
                                                   :output 25}
-                                                 {:path   "./resources/quick_sort_100.txt"
+                                                 {:path   (str base-test-case-path "/quick_sort_100.txt")
                                                   :output 615}
-                                                 {:path   "./resources/quick_sort_1000.txt"
+                                                 {:path   (str base-test-case-path "/quick_sort_1000.txt")
                                                   :output 10297}])
 
-(def ^{:private true} last-element-pivot-cases [{:path   "./resources/quick_sort_10.txt"
+(def ^{:private true} last-element-pivot-cases [{:path   (str base-test-case-path "/quick_sort_10.txt")
                                                  :output 29}
-                                                {:path   "./resources/quick_sort_100.txt"
+                                                {:path   (str base-test-case-path "/quick_sort_100.txt")
                                                  :output 587}
-                                                {:path   "./resources/quick_sort_1000.txt"
+                                                {:path   (str base-test-case-path "/quick_sort_1000.txt")
                                                  :output 10184}])
 
-(def ^{:private true} median-of-3-pivot-cases [{:path   "./resources/quick_sort_10.txt"
+(def ^{:private true} median-of-3-pivot-cases [{:path   (str base-test-case-path "/quick_sort_10.txt")
                                                 :output 21}
-                                               {:path   "./resources/quick_sort_100.txt"
+                                               {:path   (str base-test-case-path "/quick_sort_100.txt")
                                                 :output 518}
-                                               {:path   "./resources/quick_sort_1000.txt"
+                                               {:path   (str base-test-case-path "/quick_sort_1000.txt")
                                                 :output 8921}])
 
 (defn- test-quick-sort [pivot-function test-cases]
