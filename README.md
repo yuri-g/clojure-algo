@@ -1,3 +1,4 @@
-# algo
-
-Assignments for [https://www.coursera.org/learn/algorithm-design-analysis/](https://www.coursera.org/learn/algorithm-design-analysis/)
+Various algorithms implemented in clojure:
+- MergeSort
+- QuickSort
+- Graph MinCut problem
