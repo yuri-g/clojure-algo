@@ -1,4 +1,4 @@
-(ns algo.merge-sort-inversions
+(ns algo.merge-sort
   (:require [clojure.java.io :as io]))
 
 (defn- left-smaller? [left-part right-part]
