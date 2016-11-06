@@ -25,3 +25,5 @@
             [min-cut-count] (sort (map (fn [_] (min-cut/min-cut file-path)) (range 0 50)))]
         (t/is (= expected-output min-cut-count))))))
 
+(time (conj [] (range 0 100000) (range 0 100000)))
+(time (vector (range 0 5000) (range 0 5000)))
